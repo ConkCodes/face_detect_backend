@@ -8,7 +8,7 @@ app.use(express.json());
 const database = {
     users: [
         {
-            id: 123,
+            id: "123",
             name: "John",
             email: "john@gmail.com",
             password: "cookies",
@@ -16,7 +16,7 @@ const database = {
             joined: new Date()
         },
         {
-            id: 124,
+            id: "124",
             name: "Sally",
             email: "sally@gmail.com",
             password: "bananas",
@@ -43,14 +43,32 @@ app.post("/signIn", (request, response) => {
         else i++;
     }
     if (found) return response(database.users[i]);
-    else return response.status(400).json("error logging in");
+    else return response.status(400).json("invalid username or password");
 });
 
 // POST signUp
 // returns User Object
 // checks if email exists in the database
 app.post("/signUp", (request, response) => {
-
+    let i = 0;
+    let found = false;
+    while (i < database.users.length && !found) {
+        if (database.users[i].email === request.body.email) found = true;
+        else i++;
+    }
+    if (!found) {
+        const newId = 123 + database.users.length;
+        const newUser = {
+            id: newId.toString(),
+            name: request.body.name,
+            email: request.body.email,
+            password: request.body.password,
+            entries: 0,
+            joined: new Date()
+        }
+        database.users.push(newUser);
+        response.json(newUser);
+    } else response.status(400).json("this email already exists in the database");
 });
 
 
