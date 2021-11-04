@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-// root
+// root test
 app.get("/", (req, res) => {
     console.log(req.query);
     res.status(200).send("success");
