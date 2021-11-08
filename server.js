@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcrypt-nodejs";
 
 const app = express();
 
@@ -22,6 +23,13 @@ const db = {
             password: "bananas",
             entries: 0,
             joined: new Date()
+        }
+    ],
+    login: [
+        {
+            id: "987",
+            email: "john@gmail.com",
+            hash: ""
         }
     ]
 }
@@ -68,6 +76,9 @@ app.post("/signUp", (req, res) => {
         else i++;
     }
     if (!found) {
+        bcrypt.hash(req.body.password, null, null, function(err, hash) {
+            console.log(hash);
+        });
         const newId = 123 + db.users.length;
         const newUser = {
             id: newId.toString(),
