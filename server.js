@@ -1,9 +1,22 @@
 import express from "express";
+import cors from "cors";
 import bcrypt from "bcrypt-nodejs";
+import knex from "knex";
 
 const app = express();
-
 app.use(express.json());
+app.use(cors());
+
+const db = knex({
+    client: "pg",
+    connection: {
+        host : "127.0.0.1",
+        port : 5432,
+        user : "dbUser",
+        password : "dbPass",
+        database : 'dbName'
+    }
+});
 
 // temp database
 const db = {
@@ -23,13 +36,6 @@ const db = {
             password: "bananas",
             entries: 0,
             joined: new Date()
-        }
-    ],
-    login: [
-        {
-            id: "987",
-            email: "john@gmail.com",
-            hash: ""
         }
     ]
 }
