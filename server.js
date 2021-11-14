@@ -7,40 +7,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const pg = knex({
+const db = knex({
     client: "pg",
     connection: {
         host : "127.0.0.1",
         port : 5432,
         user : "postgres",
-        password : "UnderArmour32BaseData",
+        password : "pgPassword",
         database : "smart_brain"
     }
 });
 
 const saltRounds = 10;
-
-// temp database
-const db = {
-    users: [
-        {
-            id: "123",
-            name: "John",
-            email: "john@gmail.com",
-            password: "cookies",
-            entries: 0,
-            joined: new Date()
-        },
-        {
-            id: "124",
-            name: "Sally",
-            email: "sally@gmail.com",
-            password: "bananas",
-            entries: 0,
-            joined: new Date()
-        }
-    ]
-}
 
 /*
 GET /
@@ -50,7 +28,7 @@ description: SELECT `*` FROM `users`
 */
 app.get("/", async (req, res) => {
     try {
-        const users = await pg("users").select("*");
+        const users = await db("users").select("*");
         res.status(200).json(users);
     } catch (err) {
         res.status(400).json("error");
@@ -62,19 +40,25 @@ POST /signIn
 request: req.body.email, req.body.password
 response: user object
 description: 
+    SELECT `email`, `hash` FROM `login` WHERE `email` = req.params.id
     receives user input email and password and checks if they exist in the database. 
     if exists, the a user object is returned, 
     otherwise error
 */
-app.post("/signIn", (req, res) => {
-    let i = 0;
-    let found = false;
-    while (i < db.users.length && !found) {
-        if (db.users[i].email === req.body.email && db.users[i].password === req.body.password) found = true;
-        else i++;
+app.post("/signIn", async (req, res) => {
+    try {
+        const userLogin = await db("login").select("email", "hash").where({email: req.body.email});
+        if (userLogin.length === 0) res.status(400).json("invalid username or password");
+        const result = await bcrypt.compare(req.body.password, userLogin[0].hash);
+        if (!result) res.status(400).json("invalid username or password");
+        else {
+            const user = await db("users").select("*").where({email: req.body.email});
+            if (user.length === 0) res.status(400).json("error signing in");
+            else res.status(200).json(user[0]);
+        }
+    } catch (err) {
+        res.status(400).json("error signing in");
     }
-    if (found) return res.status(200).json(db.users[i]);
-    else return res.status(400).json("invalid username or password");
 });
 
 /*
@@ -90,7 +74,7 @@ description:
 app.post("/signup", async (req, res) => {
     try {
         const hash = await bcrypt.hash(req.body.password, saltRounds);
-        pg.transaction(async trx => {
+        db.transaction(async trx => {
             try {
                 await trx("login").insert({email: req.body.email, hash: hash});
                 const user = await trx("users").insert({name: req.body.name, email: req.body.email, joined: new Date()}).returning("*");
@@ -118,7 +102,7 @@ description:
 */
 app.get("/profile/:id", async (req, res) => {
     try {
-        const user = await pg("users").select("*").where({id: req.params.id});
+        const user = await db("users").select("*").where({id: req.params.id});
         if (user.length === 0) res.status(400).json("user does not exist");
         else res.status(200).json(user[0]);
     } catch (err) {
@@ -139,7 +123,7 @@ description:
 */
 app.put("/entries", async (req, res) => {
     try {
-        const entries = await pg("users").increment({entries: 1}).where({id: req.body.id}).returning("entries");
+        const entries = await db("users").increment({entries: 1}).where({id: req.body.id}).returning("entries");
         if (entries.length === 0) res.status(400).json("user does not exist");
         else res.status(200).json(entries[0]);
     } catch (err) {
