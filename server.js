@@ -7,14 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const db = knex({
+const pg = knex({
     client: "pg",
     connection: {
         host : "127.0.0.1",
         port : 5432,
-        user : "dbUser",
-        password : "dbPass",
-        database : 'dbName'
+        user : "pgUsername",
+        password : "pgPassword",
+        database : "dbName"
     }
 });
 
@@ -44,17 +44,25 @@ const db = {
 GET /
 request: n/a
 response: all users objects
-checks: n/a
+description: SELECT `*` FROM `users`
 */
-app.get("/", (req, res) => {
-    res.status(200).json(db.users);
+app.get("/", async (req, res) => {
+    try {
+        const users = await pg("users").select("*");
+        res.status(200).json(users);
+    } catch (err) {
+        res.status(400).json("error");
+    }
 });
 
 /*
 POST /signIn
 request: req.body.email, req.body.password
 response: user object
-description: receives user input email and password and checks if they exist in the database. if exists, the a user object is returned, otherwise error
+description: 
+    receives user input email and password and checks if they exist in the database. 
+    if exists, the a user object is returned, 
+    otherwise error
 */
 app.post("/signIn", (req, res) => {
     let i = 0;
@@ -71,68 +79,65 @@ app.post("/signIn", (req, res) => {
 POST /signUp
 request: req.body.name, req.body.email, req.body.password
 response: user object
-description: receives user name, email, and password and checks if the email exists in the database. if unique, the user is added to the database and a new user object is returned, 
+description: 
+    INSERT INTO `users` (`name`, `email`, `entries`, `joined`) VALUES (req.body.name, req.body.email, 0, new Date())
+    receives user name, email, and password and checks if the email exists in the database (since email must be UNIQUE). 
+    if unique, the user is added to the database and a new user object is returned, 
     otherwise error
 */
-app.post("/signUp", (req, res) => {
-    let i = 0;
-    let found = false;
-    while (i < db.users.length && !found) {
-        if (db.users[i].email === req.body.email) found = true;
-        else i++;
-    }
-    if (!found) {
-        bcrypt.hash(req.body.password, null, null, function(err, hash) {
-            console.log(hash);
-        });
-        const newId = 123 + db.users.length;
-        const newUser = {
-            id: newId.toString(),
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
-            entries: 0,
+app.post("/signup", async (req, res) => {
+    try {
+        const user = await pg("users").insert({
+            name: req.body.name, 
+            email: req.body.email, 
+            entries: 0, 
             joined: new Date()
-        }
-        db.users.push(newUser);
-        res.status(200).json(newUser);
-    } else res.status(400).json("email already exists in the database");
+        }).returning("*");
+        res.status(200).json(user[0]);
+    } catch (err) {
+        res.status(400).json("error signing up");
+    }
 });
 
 /*
 GET profile/:id
 request: req.params.id
 response: user object
-description: receives an user id and checks if they exist in the database. if exists, the a user object is returned, otherwise error
+description: 
+    SELECT `*` FROM `users` WHERE `id` = req.params.id
+    receives an user id and checks if they exist in the database. 
+    if exists, the a user object is returned, 
+    otherwise error
 */
-app.get("/profile/:id", (req, res) => {
-    let i = 0;
-    let found = false;
-    while (i < db.users.length && !found) {
-        if (db.users[i].id === req.params.id) found = true;
-        else i++;
+app.get("/profile/:id", async (req, res) => {
+    try {
+        const user = await pg("users").select("*").where({id: req.params.id});
+        if (user.length === 0) res.status(400).json("user does not exist");
+        else res.status(200).json(user[0]);
+    } catch (err) {
+        res.status(400).json("error getting user");
     }
-    if (found) return res.status(200).json(db.users[i]);
-    else return res.status(400).json("user does not exist");
 });
 
 /*
 PUT /entries
 request: req.body.id
 response: user entries
-description: receives an user id and checks if they exist in the database. if exists, the a user entries is updated and returned, otherwise error
+description: 
+    UPDATE `users` SET `entries` = `entries` + 1 WHERE `id` = req.body.id
+    RETURNING entries
+    receives an user id and checks if they exist in the database. 
+    if exists, the a user entries is updated and returned, 
+    otherwise error
 */
-app.put("/entries", (req, res) => {
-    let i = 0;
-    let found = false;
-    while (i < db.users.length && !found) {
-        if (db.users[i].id === req.body.id) found = true;
-        else i++;
+app.put("/entries", async (req, res) => {
+    try {
+        const entries = await pg("users").increment({entries: 1}).where({id: req.body.id}).returning("entries");
+        if (entries.length === 0) res.status(400).json("user does not exist");
+        else res.status(200).json(entries[0]);
+    } catch (err) {
+        res.status(400).json("error getting user");
     }
-    if (found) {
-        db.users[i].entries++;
-        return res.status(200).json(db.users[i].entries);
-    } else return res.status(400).json("user does not exist");
 });
 
 app.listen(3000);
