@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import bcrypt from "bcrypt-nodejs";
+import bcrypt from "bcrypt";
 import knex from "knex";
 
 const app = express();
@@ -12,11 +12,13 @@ const pg = knex({
     connection: {
         host : "127.0.0.1",
         port : 5432,
-        user : "pgUsername",
-        password : "pgPassword",
-        database : "dbName"
+        user : "postgres",
+        password : "UnderArmour32BaseData",
+        database : "smart_brain"
     }
 });
+
+const saltRounds = 10;
 
 // temp database
 const db = {
@@ -87,13 +89,18 @@ description:
 */
 app.post("/signup", async (req, res) => {
     try {
-        const user = await pg("users").insert({
-            name: req.body.name, 
-            email: req.body.email, 
-            entries: 0, 
-            joined: new Date()
-        }).returning("*");
-        res.status(200).json(user[0]);
+        const hash = await bcrypt.hash(req.body.password, saltRounds);
+        pg.transaction(async trx => {
+            try {
+                await trx("login").insert({email: req.body.email, hash: hash});
+                const user = await trx("users").insert({name: req.body.name, email: req.body.email, joined: new Date()}).returning("*");
+                res.status(200).json(user[0]);
+                trx.commit;
+            } catch (err) {
+                res.status(400).json("error signing up");
+                trx.rollback;
+            }
+        });
     } catch (err) {
         res.status(400).json("error signing up");
     }
