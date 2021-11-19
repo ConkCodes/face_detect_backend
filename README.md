@@ -22,7 +22,4 @@ From here you should be able to run the project with npm start. The project is a
 # Scripts
 There are some built-in scripts that make managing the database a bit easier:  
 
-npm run clean: Clears all info in the database  
-npm run populate: Populates the database with the following information  
-Around 100 movies  
-Five test users named testuser0 through testuser4, all have the password password123  
+...
