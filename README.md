@@ -10,9 +10,9 @@ Install the required dependencies through npm i
 Create and run a locally-hosted PostgreSQL database  
 Create a file named .env at the root directory of the project  
 The file must contain six variables  
-PORT: The port on localhost for the server
-PGPORT: The port on localhost for the database
-PGHOST: Where the database is hosted (should be localhost) 
+PORT: The port on localhost for the server  
+PGPORT: The port on localhost for the database  
+PGHOST: Where the database is hosted (should be localhost)  
 PGUSER: The username used to access the database (Set when configuring the Postgres database)   
 PGPASSWORD: The password used to access the database (Set when configuring the Postgres database)  
 PGDATABASE: The database name (Set when configuring the Postgres database)  
