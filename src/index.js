@@ -17,4 +17,6 @@ app.get("/", (req, res) => {
     res.status(200).json("success");
 });
 
-app.listen(3000);
+const port = process.env.PORT;
+
+app.listen(port);
