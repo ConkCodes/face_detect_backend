@@ -1,20 +1,10 @@
 import express from "express";
-import knex from "knex";
 import bcrypt from "bcrypt";
-
-const db = knex({
-    client: "pg",
-    connection: {
-        host : process.env.PGHOST,
-        port : process.env.PGPORT,
-        user : process.env.PGUSER,
-        password : process.env.PGPASSWORD,
-        database : process.env.PGDATABASE
-    }
-});
+import db from "../db/index.js";
+import getHashByEmail from "../db/sql/users/getHashByEmail.js";
+import getUserByEmail from "../db/sql/users/getUserByEmail.js";
 
 const saltRounds = 10;
-
 const userRouter = express.Router();
 
 /*
@@ -29,15 +19,19 @@ description:
 */
 userRouter.post("/signIn", async (req, res) => {
     try {
-        const userLogin = await db("login").select("email", "hash").where({email: req.body.email});
-        if (userLogin.length === 0) res.status(400).json("invalid username or password");
-        const result = await bcrypt.compare(req.body.password, userLogin[0].hash);
-        if (!result) res.status(400).json("invalid username or password");
-        else {
-            const user = await db("users").select("*").where({email: req.body.email});
-            if (user.length === 0) res.status(400).json("error signing in");
-            else res.status(200).json(user[0]);
-        }
+        // attempt to get hash by email
+        const userLogin = await getHashByEmail(req.body.email);
+        if (userLogin === -1) return res.status(400).json("error signing in");
+        if (userLogin === -2) return res.status(400).json("invalid username or password");
+        // check if input password matches hash
+        const result = await bcrypt.compare(req.body.password, userLogin.hash);
+        if (result === false) return res.status(400).json("invalid username or password");
+        // attempt to get user object by email
+        const user = await getUserByEmail(req.body.email);
+        if (user === -1 || user === -2) return res.status(400).json("error signing in");
+        // success
+        res.status(200).json(user);
+    // error
     } catch (err) {
         res.status(400).json("error signing in");
     }
