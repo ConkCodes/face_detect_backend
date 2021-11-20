@@ -1,5 +1,10 @@
 import db from "../../index.js";
 
+/*
+description: SELECT email, hash FROM login WHERE email = email;
+input: user email
+output: user login || error 1 || error 2
+*/
 const getHashByEmail = async (email) => {
     try {
         const userLogin = await db("login").select("email", "hash").where({email: email});

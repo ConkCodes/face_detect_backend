@@ -8,15 +8,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/user", userRouter);
 
-/*
-GET /
-request: n/a
-response: success messge
-description: sends success message
-*/
-app.get("/", (req, res) => {
-    res.status(200).json("success");
-});
+app.get("/", (req, res) => res.status(200).json("success"));
 
 const port = process.env.PORT;
 
