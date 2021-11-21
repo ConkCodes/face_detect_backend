@@ -8,8 +8,8 @@ output: user login || error 1 || error 2
 const incrementEntries = async (id) => {
     try {
         const entries = await db("users").increment({entries: 1}).where({id: id}).returning("entries");
-        if (entries.length !== 0) entries[0];
-        else -2;
+        if (entries.length !== 0) return entries[0];
+        else return -2;
     } catch (err) {
         return -1;
     }

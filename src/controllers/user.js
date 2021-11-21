@@ -1,10 +1,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import db from "../db/index.js";
 import getHashByEmail from "../db/sql/users/getHashByEmail.js";
 import getUserByEmail from "../db/sql/users/getUserByEmail.js";
 import addUser from "../db/sql/users/addUser.js";
 import getUserById from "../db/sql/users/getUserById.js";
+import incrementEntries from "../db/sql/users/incrementEntries.js";
 
 const saltRounds = 10;
 const userRouter = express.Router();
@@ -16,6 +16,7 @@ request: req.body.email, req.body.password
 response: user object
 */
 userRouter.post("/signIn", async (req, res) => {
+    // ADD pre-checks such as - valid password length, valid email
     try {
         // attempt to get hash by email
         const userLogin = await getHashByEmail(req.body.email);
@@ -51,10 +52,10 @@ userRouter.post("/signup", async (req, res) => {
         // hash password
         const hash = await bcrypt.hash(req.body.password, saltRounds);
         // attempt to add user to database
-        const user = await addUser(req.body.name, req.body.email, hash);
-        if (user === -1) return res.status(400).json("error signing up");
+        const newUser = await addUser(req.body.name, req.body.email, hash);
+        if (newUser === -1) return res.status(400).json("error signing up");
         // success
-        res.status(200).json(user);
+        res.status(200).json(newUser);
     // error
     } catch (err) {
         res.status(400).json("error signing up");
@@ -74,7 +75,7 @@ userRouter.get("/profile/:id", async (req, res) => {
         if (user === -1) return res.status(400).json("error getting profile");
         if (user === -2) return res.status(400).json("user does not exist");
         // success
-        res.status(200).json(user[0]);
+        res.status(200).json(user);
     // error
     } catch (err) {
         res.status(400).json("error getting profile");
