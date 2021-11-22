@@ -16,7 +16,6 @@ request: req.body.email, req.body.password
 response: user object
 */
 userRouter.post("/signIn", async (req, res) => {
-    // ADD pre-checks such as - valid password length, valid email
     try {
         // attempt to get hash by email
         const userLogin = await getHashByEmail(req.body.email);
@@ -43,6 +42,7 @@ request: req.body.name, req.body.email, req.body.password
 response: user object
 */
 userRouter.post("/signup", async (req, res) => {
+    // ADD pre-checks such as - valid password length, valid email
     try {
         // check if email does not already exist
         const user = await getUserByEmail(req.body.email);

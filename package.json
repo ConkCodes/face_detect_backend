@@ -7,7 +7,8 @@
   "scripts": {
     "start-dev": "nodemon -r dotenv/config src/index.js",
     "display": "node -r dotenv/config src/scripts/display.js",
-    "clean": "node -r dotenv/config src/scripts/clean.js"
+    "clean": "node -r dotenv/config src/scripts/clean.js",
+    "populate": "node -r dotenv/config src/scripts/populate.js"
   },
   "keywords": [],
   "author": "",

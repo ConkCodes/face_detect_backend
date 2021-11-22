@@ -1,6 +1,6 @@
 import getTable from "../db/sql/core/getTable.js";
 
-const displayDatabase = async () => {
+const display = async () => {
     try {
         // attempt to display users table
         console.log("users table");
@@ -22,5 +22,5 @@ const displayDatabase = async () => {
     console.log("finished");
 }
 
-await displayDatabase();
+await display();
 process.exit();
