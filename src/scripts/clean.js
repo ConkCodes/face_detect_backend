@@ -1,5 +1,5 @@
-import deleteTables from "../db/sql/scripts/deleteTables.js";
-import createTables from "../db/sql/scripts/createTables.js";
+import deleteTables from "../db/sql/core/deleteTables.js";
+import createTables from "../db/sql/core/createTables.js";
 
 const clean = async () => {
     try {
@@ -10,9 +10,9 @@ const clean = async () => {
         console.log("the database has been cleaned");
     // error
     } catch (err) {
-        console.log("an error has occurred while cleaning the database");
+        console.log("an error has occurred while viewing the database");
     }
 }
 
-clean();
-// process.exit();
+await clean();
+process.exit();
