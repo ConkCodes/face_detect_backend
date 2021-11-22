@@ -23,8 +23,7 @@ userRouter.post("/signIn", async (req, res) => {
         if (userLogin === -1) return res.status(400).json("error signing in");
         if (userLogin === -2) return res.status(400).json("invalid username or password");
         // check if input password matches hash
-        const result = await bcrypt.compare(req.body.password, userLogin.hash);
-        if (result === false) return res.status(400).json("invalid username or password");
+        if (!(await bcrypt.compare(req.body.password, userLogin.hash))) return res.status(400).json("invalid username or password");
         // attempt to get user object by email
         const user = await getUserByEmail(req.body.email);
         if (user === -1) return res.status(400).json("error signing in");

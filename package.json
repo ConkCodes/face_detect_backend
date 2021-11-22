@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start-dev": "nodemon -r dotenv/config src/index.js"
+    "start-dev": "nodemon -r dotenv/config src/index.js",
+    "clean": "node -r dotenv/config src/scripts/clean.js"
   },
   "keywords": [],
   "author": "",
