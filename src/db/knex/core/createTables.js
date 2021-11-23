@@ -21,10 +21,10 @@ const createTables = async () => {
             });
         }
         // success
-        console.log("all tables have been created");
+        return 1;
     // error
     } catch (err) {
-        console.log("an error has occurred while creating the tables");
+        return -1;
     }
 }
 

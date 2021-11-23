@@ -7,10 +7,10 @@ const deleteTables = async () => {
         // DROP TABLE IF EXISTS logins;
         await db.schema.dropTableIfExists('logins');
         // success
-        console.log("all tables have been deleted");
+        return 1;
     // error
     } catch (err) {
-        console.log("an error has occurred while deleting the tables");
+        return -1;
     }
 }
 

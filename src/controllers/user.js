@@ -1,10 +1,10 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import getHashByEmail from "../db/sql/users/getHashByEmail.js";
-import getUserByEmail from "../db/sql/users/getUserByEmail.js";
-import addUser from "../db/sql/users/addUser.js";
-import getUserById from "../db/sql/users/getUserById.js";
-import incrementEntries from "../db/sql/users/incrementEntries.js";
+import getHashByEmail from "../db/knex/users/getHashByEmail.js";
+import getUserByEmail from "../db/knex/users/getUserByEmail.js";
+import addUser from "../db/knex/users/addUser.js";
+import getUserById from "../db/knex/users/getUserById.js";
+import incrementEntries from "../db/knex/users/incrementEntries.js";
 
 const saltRounds = 10;
 const userRouter = express.Router();
