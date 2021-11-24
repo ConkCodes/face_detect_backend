@@ -2,11 +2,9 @@ import db from "../../index.js";
 
 const getTable = async (tableName) => {
     try {
-        // attempt to get table
-        if (await db.schema.hasTable(tableName)) return await db(tableName).select("*").limit(5);
-        // fail
+        const exists = await db.schema.hasTable(tableName);
+        if (exists) return await db(tableName).select("*").limit(5);
         return -2;
-    // error
     } catch (err) {
         return -1;
     }

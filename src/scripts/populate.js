@@ -31,12 +31,10 @@ const populate = async () => {
                 console.log("test user " + i + ": error - signing up");
                 continue;
             }
-            // success
             console.log("test user " + i + ": signed up - login ('" + users[i].email + "', '" + users[i].password + "')");
         }
         console.log();
         if (0 < used) console.log("'npm run clean' wipes the database","\n");
-    // error
     } catch (err) {
         console.log("an error has occurred while populating the database", "\n");
     }

@@ -6,9 +6,7 @@ const deleteTables = async () => {
         await db.schema.dropTableIfExists('users');
         // DROP TABLE IF EXISTS logins;
         await db.schema.dropTableIfExists('logins');
-        // success
         return 1;
-    // error
     } catch (err) {
         return -1;
     }

@@ -1,15 +1,7 @@
 import db from "../../index.js";
 
-/*
-description: 
-    INSERT INTO login (email, hash) VALUES (email, hash);
-    INSERT INTO users (name, email, joined) VALUES (name, email, new Date());
-input: 
-    user name
-    user email
-    user password hash
-output: user login || error 1
-*/
+// INSERT INTO login (email, hash) VALUES (email, hash);
+// INSERT INTO users (name, email, joined) VALUES (name, email, new Date());
 const addUser = async (name, email, hash) => {
     try {
         return db.transaction(async trx => {

@@ -1,15 +1,11 @@
 import db from "../../index.js";
 
-/*
-description: SELECT * FROM login WHERE email = email;
-input: user email
-output: user login || error 1 || error 2
-*/
+// SELECT * FROM login WHERE email = email;
 const getUserByEmail = async (email) => {
     try {
         const user = await db("users").select("*").where({email: email});
-        if (user.length !== 0) return user[0];
-        else return -2;
+        if (user.length === 0) return -2;
+        return user[0];
     } catch (err) {
         return -1;
     }
