@@ -8,11 +8,9 @@ const saltRounds = 10;
 const populate = async () => {
     try {
         console.log("populating the database with test users 0-9", "\n");
-        // iterate throught test users
         let used = 0;
         const n = users.length;
         for (let i = 0; i < n; i++) {
-            // check if email does not already exist
             const user = await getUserByEmail(users[i].email);
             if (user.id) {
                 console.log("test user " + i + ": error - email '" + users[i].email + "' has already been used");
@@ -23,9 +21,7 @@ const populate = async () => {
                 console.log("test user " + i + ": error - signing up");
                 continue;
             }
-            // hash password
             const hash = await bcrypt.hash(users[i].password, saltRounds);
-            // attempt to add user to database
             const newUser = await addUser(users[i].name, users[i].email, hash);
             if (newUser === -1) {
                 console.log("test user " + i + ": error - signing up");
