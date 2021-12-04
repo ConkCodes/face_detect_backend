@@ -62,4 +62,19 @@ userRouter.put("/entries", async (req, res) => {
     res.status(201).json(entries);
 });
 
+// PUT /user/name
+userRouter.put("/name", async (req, res) => {
+
+});
+
+// PUT /user/email
+userRouter.put("/email", async (req, res) => {
+
+});
+
+// PUT /user/password
+userRouter.put("/password", async (req, res) => {
+
+});
+
 export default userRouter;
