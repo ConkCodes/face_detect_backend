@@ -5,7 +5,9 @@ import getHashByEmail from "../db/knex/users/getHashByEmail.js";
 import getUserByEmail from "../db/knex/users/getUserByEmail.js";
 import addUser from "../db/knex/users/addUser.js";
 import getUserById from "../db/knex/users/getUserById.js";
-import incrementEntries from "../db/knex/users/incrementEntries.js";
+import updateEntries from "../db/knex/users/updateEntries.js";
+import updateName from "../db/knex/users/updateName.js";
+import updateEmail from "../db/knex/users/updateEmail.js";
 
 const saltRounds = 10;
 const userRouter = express.Router();
@@ -56,20 +58,31 @@ userRouter.post("/clarifai", async(req, res) => {
 
 // PUT /user/entries
 userRouter.put("/entries", async (req, res) => {
-    const entries = await incrementEntries(req.body.id, req.body.input);
+    const entries = await updateEntries(req.body.id);
     if (entries === -1) return res.status(500).json("error updating user entries");
     if (entries === -2) return res.status(404).json("user not found");
-    res.status(201).json(entries);
+    res.status(200).json(entries);
 });
 
 // PUT /user/name
 userRouter.put("/name", async (req, res) => {
-
+    if (req.body.name === "") return res.status(400).json("name cannot be empty");
+    const name = await updateName(req.body.id, req.body.name);
+    if (name === -1) return res.status(500).json("error updating name");
+    if (name === -2) return res.status(404).json("user not found");
+    res.status(200).json(name);
 });
 
 // PUT /user/email
 userRouter.put("/email", async (req, res) => {
-
+    if (req.body.email === "") return res.status(400).json("name cannot be empty");
+    const user = await getUserByEmail(req.body.email);
+    if (user === -1) return res.status(500).json("error updating email");
+    else if (user !== -2 && user !== -1) return res.status(400).json("this email has already been used");
+    const email = await updateEmail(req.body.id, req.body.email);
+    if (email === -1) return res.status(500).json("error updating email");
+    if (email === -2) return res.status(404).json("user not found");
+    res.status(200).json(email);
 });
 
 // PUT /user/password
