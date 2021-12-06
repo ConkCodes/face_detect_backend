@@ -8,6 +8,7 @@ import getUserById from "../db/knex/users/getUserById.js";
 import updateEntries from "../db/knex/users/updateEntries.js";
 import updateName from "../db/knex/users/updateName.js";
 import updateEmail from "../db/knex/users/updateEmail.js";
+import updatePassword from "../db/knex/users/updatePassword.js";
 
 const saltRounds = 10;
 const userRouter = express.Router();
@@ -85,7 +86,11 @@ userRouter.put("/email", async (req, res) => {
 
 // PUT /user/password
 userRouter.put("/password", async (req, res) => {
-
+    if (req.body.password === "") return res.status(400).json("password cannot be empty");
+    const hash = await bcrypt.hash(req.body.password, saltRounds);
+    const result = await updatePassword(req.body.id, hash);
+    if (result === -1) return res.status(500).json("error updating password");
+    res.status(200).json(result);
 });
 
 export default userRouter;
