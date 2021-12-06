@@ -60,7 +60,6 @@ userRouter.post("/clarifai", async(req, res) => {
 userRouter.put("/entries", async (req, res) => {
     const entries = await updateEntries(req.body.id);
     if (entries === -1) return res.status(500).json("error updating user entries");
-    if (entries === -2) return res.status(404).json("user not found");
     res.status(200).json(entries);
 });
 
@@ -69,7 +68,6 @@ userRouter.put("/name", async (req, res) => {
     if (req.body.name === "") return res.status(400).json("name cannot be empty");
     const name = await updateName(req.body.id, req.body.name);
     if (name === -1) return res.status(500).json("error updating name");
-    if (name === -2) return res.status(404).json("user not found");
     res.status(200).json(name);
 });
 

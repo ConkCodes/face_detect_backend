@@ -5,7 +5,7 @@ import db from "../../index.js";
 const addUser = async (name, email, hash) => {
     try {
         return db.transaction(async trx => {
-            await trx("logins").insert({email: email, hash: hash}).returning("*");
+            await trx("logins").insert({email: email, hash: hash});
             const user = await trx("users").insert({name: name, email: email, joined: new Date()}).returning("*");
             return user[0];
         });
