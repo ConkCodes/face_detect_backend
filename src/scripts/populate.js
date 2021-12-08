@@ -7,7 +7,7 @@ const saltRounds = 10;
 
 const populate = async () => {
     try {
-        console.log("populating the database with test users 0-9", "\n");
+        console.log("populating the database with test users 0-4", "\n");
         let used = 0;
         const n = users.length;
         for (let i = 0; i < n; i++) {

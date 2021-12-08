@@ -2,7 +2,7 @@ import getTable from "../db/knex/core/getTable.js";
 
 const display = async () => {
     try {
-        console.log("displaying the first 5 records from each table...", "\n");
+        console.log("displaying the first 10 records from each table...", "\n");
         // attempt to display users table
         console.log("users table");
         const usersTable = await getTable("users");
